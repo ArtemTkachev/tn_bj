@@ -2,13 +2,13 @@
 
 # class Deck
 class Deck
+  CARDS_SUITS = %W[\u2660 \u2665 \u2663 \u2666].freeze
+  CARDS_VALUES = %w[2 3 4 5 6 7 8 9 10 J Q K A].freeze
+
   attr_reader :number, :cards
 
-  CARDS_VALUES = %w[2 3 4 5 6 7 8 9 10 J Q K A].freeze
-  CARDS_SUITS = %W[\u2660 \u2665 \u2663 \u2666].freeze
-
-  def initialize(number)
-    @number = number
+  def initialize
+    @number = :unknown
     @cards = []
     create_deck
   end

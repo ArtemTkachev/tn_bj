@@ -1,10 +1,17 @@
 # frozen_string_literal: true
 
-require_relative './interface/menu'
+require_relative './interface/menu_input'
+require_relative './interface/menu_output'
+require_relative './lib/actions'
 
 # module Main
 module Main
-  extend Menu
+  extend MenuOutput
+  extend MenuInput
+  extend Actions
 
-  show_menu
+  TITLE = 'BLACK JACK GAME'
+
+  puts TITLE
+  menu(:start)
 end
