@@ -5,34 +5,47 @@ class Table
   attr_reader :gamer,
               :dealer,
               :deck,
-              :status,
               :bank
+  attr_accessor :status, :winner
 
   def initialize(dealer, gamer, deck)
     @gamer = gamer
     @dealer = dealer
     @deck = deck
-    @bank = 0
+    @bank = Account.new(0)
     @status = :start
+    @winner = :unknown
   end
 
-  def start_card_hit
+  def double_card_hit
     dealer.hit_several_cards(deck.card, deck.card)
     gamer.hit_several_cards(deck.card, deck.card)
-  end
-
-  def top_up_all_accounts(amount)
-    dealer.account.top_up(amount)
-    gamer.account.top_up(amount)
   end
 
   def place_bet(bet)
     dealer.account.withdraw(bet)
     gamer.account.withdraw(bet)
-    self.bank = (bet * 2)
+    bank.top_up(bet * 2)
+  end
+
+  def results
+    self.winner = result
+    if result == :nobody
+      dealer.account.top_up(bank.total_amount / 2)
+      gamer.account.top_up(bank.total_amount / 2)
+    else
+      send(result).account.top_up(bank.total_amount)
+    end
+    bank.withdraw(bank.total_amount)
   end
 
   protected
 
-  attr_writer :bank, :status
+  def result
+    return :dealer if gamer.points > 21 || (gamer.points < dealer.points && dealer.points < 22)
+
+    return :nobody if gamer.points == dealer.points
+
+    :gamer
+  end
 end

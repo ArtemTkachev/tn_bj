@@ -3,11 +3,13 @@
 # class Person
 class Person
   attr_reader :account, :cards, :points
+  attr_accessor :shadow_cards
 
   def initialize(account)
     @account = account
     @cards = []
     @points = 0
+    @shadow_cards = true
   end
 
   def hit_card(card)

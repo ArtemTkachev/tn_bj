@@ -22,17 +22,42 @@ class Actions
   end
 
   def create_game
-    table.start_card_hit
+    table.double_card_hit
     table.place_bet(10)
-    menu(:gamer_turn)
+    table.gamer.shadow_cards = false
+    table.status = :gamer_turn
+    menu
   end
 
-  def stand
-
+  def open_action
+    table.dealer.shadow_cards = false
+    counting_results
   end
 
-  def hit
+  def stand_action
+    dealer_turn
+  end
+
+  def hit_action
     table.gamer.hit_card(table.deck.card)
-    output_table(table)
+    dealer_turn if table.gamer.cards.size > 2
+
+    menu
+  end
+
+  def dealer_turn
+    if table.dealer.points >= 17
+      table.status = :gamer_turn
+    elsif table.dealer.cards.size < 3
+      table.dealer.hit_card(table.deck.card)
+    else
+      open_action
+    end
+  end
+
+  def counting_results
+    table.results
+    table.status = :start
+    menu
   end
 end
