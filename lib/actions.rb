@@ -1,25 +1,38 @@
 # frozen_string_literal: true
 
-Dir['../models/*.rb'].sort!.each { |file| require_relative file }
 require_relative '../interface/menu_output'
+require_relative '../interface/menu_input'
+require_relative '../models/table'
+require_relative '../models/dealer'
+require_relative '../models/gamer'
+require_relative '../models/account'
+require_relative '../models/deck'
 
-# module Actions
-module Actions
+# class Actions
+class Actions
   include MenuOutput
+  include MenuInput
 
-  def create_game
-    table = Table.new(Person.new(Account.new(100)),
-                      Person.new(Account.new(100)),
-                      Deck.new)
-    start_card_hit(table.dealer)
-    start_card_hit(table.gamer)
-    output_table
+  attr_reader :table
+
+  def initialize
+    @table = Table.new(Dealer.new(Account.new(100)),
+                       Gamer.new(Account.new(100)),
+                       Deck.new)
   end
 
-  protected
+  def create_game
+    table.start_card_hit
+    table.place_bet(10)
+    menu(:gamer_turn)
+  end
 
-  def start_card_hit(person)
-    person.hit_card(table.deck.card)
-    person.hit_card(table.deck.card)
+  def stand
+
+  end
+
+  def hit
+    table.gamer.hit_card(table.deck.card)
+    output_table(table)
   end
 end

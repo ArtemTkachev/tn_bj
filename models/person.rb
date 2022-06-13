@@ -15,6 +15,12 @@ class Person
     @points += card_points(card)
   end
 
+  def hit_several_cards(*cards)
+    cards.each do |card|
+      hit_card(card)
+    end
+  end
+
   protected
 
   def card_points(card)

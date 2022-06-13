@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'card'
+
 # class Deck
 class Deck
   CARDS_SUITS = %W[\u2660 \u2665 \u2663 \u2666].freeze
@@ -14,6 +16,8 @@ class Deck
   end
 
   def card
+    raise 'There are no more cards in the deck!' if cards.empty?
+
     cards.pop
   end
 
