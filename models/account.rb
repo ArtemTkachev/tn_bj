@@ -8,6 +8,10 @@ class Account
     @total_amount = total_amount
   end
 
+  def enough_funds?(amount)
+    total_amount >= amount
+  end
+
   def withdraw(amount)
     raise 'There are no more funds in the account!' if amount > total_amount
 

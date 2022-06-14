@@ -13,20 +13,41 @@ class Actions
   include MenuOutput
   include MenuInput
 
-  attr_reader :table
+  attr_reader :table, :info
+
+  BET = 10
+  ACCOUNT_AMOUNT = 100
 
   def initialize
-    @table = Table.new(Dealer.new(Account.new(100)),
-                       Gamer.new(Account.new(100)),
+    @table = Table.new(Dealer.new(Account.new(ACCOUNT_AMOUNT)),
+                       Gamer.new(Account.new(ACCOUNT_AMOUNT)),
                        Deck.new)
+    @info = ''
   end
 
   def create_game
+    table.zeroing
     table.double_card_hit
-    table.place_bet(10)
-    table.gamer.shadow_cards = false
+    begin
+      table.place_bet(BET)
+    rescue RuntimeError => e
+      self.info = e.message
+    end
     table.status = :gamer_turn
-    menu
+  end
+
+  def hit_action
+    if table.gamer.cards.size < 3
+      table.gamer.hit_card(table.deck.card)
+      table.status = :gamer_turn_again
+    end
+    dealer_turn
+  end
+
+  def stand_action
+    return open_action if table.dealer.cards.size > 2 || table.dealer.points >= 17
+
+    dealer_turn
   end
 
   def open_action
@@ -34,30 +55,20 @@ class Actions
     counting_results
   end
 
-  def stand_action
-    dealer_turn
-  end
+  protected
 
-  def hit_action
-    table.gamer.hit_card(table.deck.card)
-    dealer_turn if table.gamer.cards.size > 2
+  attr_writer :info
 
-    menu
+  def cards_number_more(number)
+    open_action if table.gamer.cards.size > number && table.dealer.cards.size > number
   end
 
   def dealer_turn
-    if table.dealer.points >= 17
-      table.status = :gamer_turn
-    elsif table.dealer.cards.size < 3
-      table.dealer.hit_card(table.deck.card)
-    else
-      open_action
-    end
+    table.dealer.hit_card(table.deck.card) if table.dealer.cards.size < 3 && table.dealer.points < 17
   end
 
   def counting_results
     table.results
     table.status = :start
-    menu
   end
 end

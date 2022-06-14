@@ -12,6 +12,11 @@ class Person
     @shadow_cards = true
   end
 
+  def zeroing
+    self.cards = []
+    self.points = 0
+  end
+
   def hit_card(card)
     @cards << card
     @points += card_points(card)
@@ -24,6 +29,8 @@ class Person
   end
 
   protected
+
+  attr_writer :cards, :points
 
   def card_points(card)
     return card.value.to_i if ('2'..'10').include?(card.value)
